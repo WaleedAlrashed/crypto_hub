@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:crypto_tracker/notifiers/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_fix/flutter_icons_fix.dart';
 import 'services/price_service.dart';
@@ -7,28 +8,26 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() => runApp(CryptoTrackerApp());
 
-class CryptoTrackerApp extends StatefulWidget {
-  @override
-  _CryptoTrackerAppState createState() => _CryptoTrackerAppState();
-}
+class CryptoTrackerApp extends StatelessWidget {
+  final ThemeNotifier _themeNotifier = ThemeNotifier();
 
-class _CryptoTrackerAppState extends State<CryptoTrackerApp> {
-  ThemeMode _themeMode = ThemeMode.system;
-
-  void _toggleTheme() {
-    setState(() {
-      _themeMode =
-          _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    });
-  }
+  CryptoTrackerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: _themeMode,
-      home: PriceListScreen(onToggleTheme: _toggleTheme),
+    return StreamBuilder<ThemeMode>(
+      stream: _themeNotifier.themeStream,
+      initialData: _themeNotifier.currentTheme,
+      builder: (context, snapshot) {
+        return MaterialApp(
+          theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          themeMode: snapshot.data,
+          home: PriceListScreen(
+            onToggleTheme: _themeNotifier.toggleTheme,
+          ),
+        );
+      },
     );
   }
 }
@@ -64,7 +63,7 @@ class PriceListScreen extends StatelessWidget {
 
           return StreamBuilder(
             stream: priceService.priceStream.asyncMap((data) async {
-              await Future.delayed(const Duration(seconds: 5));
+              await Future.delayed(const Duration(seconds: 1));
               return data;
             }),
             builder: (context, snapshot) {
