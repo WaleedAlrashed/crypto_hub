@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_icons_fix/flutter_icons_fix.dart';
 import 'services/price_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -25,12 +26,17 @@ class PriceListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Crypto Tracker')),
+      appBar: AppBar(
+        title: const Text(
+          'Crypto Tracker',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.deepPurple,
+      ),
       body: ListView.builder(
         itemCount: cryptoSymbols.length,
         itemBuilder: (context, index) {
           final symbol = cryptoSymbols[index];
-          print("fuck $symbol");
           final priceService = PriceService(symbol);
 
           return StreamBuilder(
@@ -41,18 +47,62 @@ class PriceListScreen extends StatelessWidget {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final priceData = jsonDecode(snapshot.data);
-// "{"e":"trade","E":1730565712804,"s":"BTCUSDT","t":3993655081,"p":"69562.00000000","q":"0.00089000","T":1730565712804,"m":false,"M…"
-
                 final priceString = priceData['p'];
                 final price = double.parse(priceString);
-                return ListTile(
-                  title: Text("$symbol"),
-                  subtitle: Text('Price: $price'),
+
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    leading: const Icon(
+                      FlutterIcons.currency_btc_mco,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      symbol.toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Price: \$${price.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.trending_up,
+                      color: Colors.green,
+                    ),
+                  ),
                 );
               } else {
-                return ListTile(
-                  title: Text("$symbol"),
-                  subtitle: const Text('Loading...'),
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    leading: const Icon(
+                      FlutterIcons.currency_btc_mco,
+                      color: Colors.orange,
+                    ),
+                    title: Text(
+                      symbol.toUpperCase(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    subtitle: const Text('Loading...'),
+                  ),
                 );
               }
             },

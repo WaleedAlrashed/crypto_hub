@@ -94,6 +94,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_icons_fix:
+    dependency: "direct main"
+    description:
+      name: flutter_icons_fix
+      sha256: a15cc7491eca26b92cb7b3b42e79c0d0c09b406a1ef62d0fabefc131f3b13879
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   flutter_lints:
     dependency: "direct dev"
     description:
