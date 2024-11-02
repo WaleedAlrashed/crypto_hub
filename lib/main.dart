@@ -13,6 +13,9 @@ class CryptoTrackerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system, // Use system theme by default
       home: PriceListScreen(),
     );
   }
@@ -32,6 +35,20 @@ class PriceListScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.deepPurple,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: () {
+              // Toggle theme mode
+              ThemeMode currentMode =
+                  Theme.of(context).brightness == Brightness.dark
+                      ? ThemeMode.light
+                      : ThemeMode.dark;
+              // Update the theme mode
+              // Note: You need a state management solution to handle this
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: cryptoSymbols.length,
