@@ -5,26 +5,40 @@ import 'package:flutter_icons_fix/flutter_icons_fix.dart';
 import 'services/price_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() => runApp(const CryptoTrackerApp());
+void main() => runApp(CryptoTrackerApp());
 
-class CryptoTrackerApp extends StatelessWidget {
-  const CryptoTrackerApp({super.key});
+class CryptoTrackerApp extends StatefulWidget {
+  @override
+  _CryptoTrackerAppState createState() => _CryptoTrackerAppState();
+}
+
+class _CryptoTrackerAppState extends State<CryptoTrackerApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  void _toggleTheme() {
+    setState(() {
+      _themeMode =
+          _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system, // Use system theme by default
-      home: PriceListScreen(),
+      themeMode: _themeMode,
+      home: PriceListScreen(onToggleTheme: _toggleTheme),
     );
   }
 }
 
 class PriceListScreen extends StatelessWidget {
   final List<String> cryptoSymbols = ['btcusdt', 'ethusdt'];
+  final VoidCallback onToggleTheme;
+  final Map<String, double> previousPrices = {};
 
-  PriceListScreen({super.key});
+  PriceListScreen({super.key, required this.onToggleTheme});
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +52,7 @@ class PriceListScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.brightness_6),
-            onPressed: () {
-              // Toggle theme mode
-              ThemeMode currentMode =
-                  Theme.of(context).brightness == Brightness.dark
-                      ? ThemeMode.light
-                      : ThemeMode.dark;
-              // Update the theme mode
-              // Note: You need a state management solution to handle this
-            },
+            onPressed: onToggleTheme,
           ),
         ],
       ),
@@ -58,7 +64,7 @@ class PriceListScreen extends StatelessWidget {
 
           return StreamBuilder(
             stream: priceService.priceStream.asyncMap((data) async {
-              await Future.delayed(const Duration(seconds: 1));
+              await Future.delayed(const Duration(seconds: 5));
               return data;
             }),
             builder: (context, snapshot) {
@@ -66,6 +72,26 @@ class PriceListScreen extends StatelessWidget {
                 final priceData = jsonDecode(snapshot.data);
                 final priceString = priceData['p'];
                 final price = double.parse(priceString);
+
+                if (previousPrices[symbol] != null &&
+                    previousPrices[symbol] != price) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${symbol.toUpperCase()} price changed to \$${price.toStringAsFixed(2)}',
+                          ),
+                          backgroundColor: Colors.deepPurple,
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  });
+                }
+
+                previousPrices[symbol] = price;
 
                 return Card(
                   margin:
