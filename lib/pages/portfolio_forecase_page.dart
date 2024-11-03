@@ -20,7 +20,8 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
     'XRP',
     'ADA'
   ]; // Example list
-  final TextEditingController amountController = TextEditingController();
+  final TextEditingController amountController =
+      TextEditingController(text: "50");
 
   @override
   Widget build(BuildContext context) {

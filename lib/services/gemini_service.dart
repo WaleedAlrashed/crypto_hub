@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:crypto_tracker/config/dummy_data.dart';
 import 'package:crypto_tracker/models/forecast_model.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
@@ -13,18 +15,29 @@ class GeminiService {
     String prompt = """
 User is requesting a forecast for their cryptocurrency portfolio. The user holds $cryptoAmount of $selectedCrypto
  Generate a forecast for the portfolio’s projected revenue growth over time, assuming average market trends and historical growth rates. Provide insights on potential returns in the short term (1-3 months), medium term (6-12 months), and long term (1-5 years). Include any assumptions used in the forecast.
-Data should be returned in the following json format only $forecastJsonFromat
+Data should be returned in the following json format only $forecastJsonFromat 
+Do not return anything other than parsable json data
 """;
+    if (!AppConfig.isDebug) {
+      final forecastResult = await gemini.text(prompt);
+      if (forecastResult != null) {
+        if (forecastResult.content?.parts != null) {
+          String? jsonString = forecastResult.content!.parts!.first.text;
+          if (jsonString != null) {
+            Map<String, dynamic> jsonData = jsonDecode(jsonString);
 
-    final forecastResult = await gemini.text(prompt);
-    if (forecastResult != null) {
-      if (forecastResult.content?.parts != null) {
-        dynamic jsonString = forecastResult.content!.parts!.first.text;
-        Map<String, dynamic> jsonData = jsonDecode(jsonString);
-        ForecastModel forecastModel = ForecastModel.fromJson(jsonData);
+            ForecastModel forecastModel = ForecastModel.fromJson(jsonData);
 
-        return forecastModel;
+            return forecastModel;
+          }
+        }
       }
+    } else {
+      Map<String, dynamic> jsonData = jsonDecode(dummyForecast);
+
+      ForecastModel forecastModel = ForecastModel.fromJson(jsonData);
+
+      return forecastModel;
     }
     return Future.value(ForecastModel.empty());
   }
@@ -61,12 +74,13 @@ Data should be returned in the following json format only $forecastJsonFromat
     },
     "tips":{
     "type": "string",
-    "description":"Tips and tricks to increase revenue based on the Forecasted revenue growth"
+    "description":"Tips and tricks to increase revenue based on the Forecasted revenue growth (make sure to escape new lines in order to parse it the code)"
     }
   },
   "required": [
     "crypto",
-    "forecast"
+    "forecast",
+    "tips"
   ]
 }
 """;
