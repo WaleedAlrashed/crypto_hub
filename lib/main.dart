@@ -1,8 +1,15 @@
 import 'package:crypto_tracker/notifiers/theme_notifier.dart';
+import 'package:crypto_tracker/pages/portfolio_forecase_page.dart';
 import 'package:crypto_tracker/pages/price_list_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
-void main() => runApp(CryptoTrackerApp());
+void main() {
+  Gemini.init(apiKey: 'AIzaSyAXtMS9KyKDb4sFQwZAegWWRclet5dd1cE');
+  runApp(
+    CryptoTrackerApp(),
+  );
+}
 
 class CryptoTrackerApp extends StatelessWidget {
   final ThemeNotifier _themeNotifier = ThemeNotifier();
@@ -19,9 +26,9 @@ class CryptoTrackerApp extends StatelessWidget {
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
           themeMode: snapshot.data,
-          home: PriceListPage(
-            onToggleTheme: _themeNotifier.toggleTheme,
-          ),
+          home: PortfolioForecastPage(
+              // onToggleTheme: _themeNotifier.toggleTheme,
+              ),
         );
       },
     );
