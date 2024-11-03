@@ -49,16 +49,16 @@ class PriceListPage extends StatelessWidget {
                     previousPrices[symbol] != price) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${symbol.toUpperCase()} price changed to \$${price.toStringAsFixed(2)}',
-                          ),
-                          backgroundColor: Colors.deepPurple,
-                          behavior: SnackBarBehavior.floating,
-                          duration: const Duration(seconds: 3),
-                        ),
-                      );
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   SnackBar(
+                      //     content: Text(
+                      //       '${symbol.toUpperCase()} price changed to \$${price.toStringAsFixed(2)}',
+                      //     ),
+                      //     backgroundColor: Colors.deepPurple,
+                      //     behavior: SnackBarBehavior.floating,
+                      //     duration: const Duration(seconds: 3),
+                      //   ),
+                      // );
                     }
                   });
                 }
