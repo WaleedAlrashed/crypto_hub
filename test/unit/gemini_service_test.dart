@@ -1,10 +1,24 @@
+import 'dart:io';
+
+import 'package:crypto_tracker/models/forecast_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:crypto_tracker/services/gemini_service.dart';
 
 void main() {
   group('GeminiService Tests', () {
-    Gemini.init(apiKey: "apiKey");
+    setUpAll(() async {
+      // Load environment variables
+      dotenv.testLoad(fileInput: File('.env').readAsStringSync());
+
+      // Initialize Gemini with the API key from .env
+      final apiKey = dotenv.env['GEMINI_API_KEY'];
+      if (apiKey == null) {
+        throw Exception('API_KEY not found in .env file');
+      }
+      Gemini.init(apiKey: apiKey);
+    });
     test('getForecast returns valid data', () async {
       // Arrange
       const String crypto = 'BTC';
@@ -27,7 +41,7 @@ void main() {
       // Act & Assert
       expect(
         () async => await GeminiService.getForecast(crypto, amount),
-        throwsA(isA<Exception>()),
+        throwsA(isA<Future<ForecastModel>>()),
       );
     });
   });
