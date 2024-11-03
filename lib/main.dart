@@ -1,6 +1,5 @@
 import 'package:crypto_tracker/notifiers/theme_notifier.dart';
-import 'package:crypto_tracker/pages/portfolio_forecase_page.dart';
-import 'package:crypto_tracker/pages/price_list_page.dart';
+import 'package:crypto_tracker/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
@@ -26,9 +25,7 @@ class CryptoTrackerApp extends StatelessWidget {
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
           themeMode: snapshot.data,
-          home: PortfolioForecastPage(
-              // onToggleTheme: _themeNotifier.toggleTheme,
-              ),
+          home: const HomePage(),
         );
       },
     );

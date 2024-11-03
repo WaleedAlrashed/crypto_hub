@@ -1,15 +1,16 @@
 import 'dart:convert';
 
+import 'package:crypto_tracker/notifiers/theme_notifier.dart';
 import 'package:crypto_tracker/services/price_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_fix/flutter_icons_fix.dart';
 
 class PriceListPage extends StatelessWidget {
   final List<String> cryptoSymbols = ['btcusdt', 'ethusdt'];
-  final VoidCallback onToggleTheme;
+
   final Map<String, double> previousPrices = {};
 
-  PriceListPage({super.key, required this.onToggleTheme});
+  PriceListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class PriceListPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.brightness_6),
-            onPressed: onToggleTheme,
+            onPressed: ThemeNotifier().toggleTheme,
           ),
         ],
       ),

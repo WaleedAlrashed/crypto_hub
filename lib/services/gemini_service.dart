@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:crypto_tracker/config/dummy_data.dart';
 import 'package:crypto_tracker/models/forecast_model.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
