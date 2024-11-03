@@ -25,86 +25,93 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Portfolio Revenue Forecast'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Dropdown for selecting cryptocurrency
-              DropdownButtonFormField<String>(
-                value: selectedCrypto,
-                hint: const Text('Select Cryptocurrency'),
-                items: cryptocurrencies.map((crypto) {
-                  return DropdownMenuItem(
-                    value: crypto,
-                    child: Text(crypto),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedCrypto = value;
-                  });
-                },
-                validator: (value) =>
-                    value == null ? 'Please select a cryptocurrency' : null,
-              ),
-              const SizedBox(height: 16.0),
+    return Navigator(
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(
+              title: const Text('Portfolio Revenue Forecast'),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Dropdown for selecting cryptocurrency
+                    DropdownButtonFormField<String>(
+                      value: selectedCrypto,
+                      hint: const Text('Select Cryptocurrency'),
+                      items: cryptocurrencies.map((crypto) {
+                        return DropdownMenuItem(
+                          value: crypto,
+                          child: Text(crypto),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedCrypto = value;
+                        });
+                      },
+                      validator: (value) => value == null
+                          ? 'Please select a cryptocurrency'
+                          : null,
+                    ),
+                    const SizedBox(height: 16.0),
 
-              // Text field for entering amount
-              TextFormField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Amount',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
-                  }
-                  final amount = double.tryParse(value);
-                  if (amount == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-                onSaved: (value) {
-                  cryptoAmount = double.parse(value!);
-                },
-              ),
-              const SizedBox(height: 20.0),
+                    // Text field for entering amount
+                    TextFormField(
+                      controller: amountController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Amount',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter an amount';
+                        }
+                        final amount = double.tryParse(value);
+                        if (amount == null) {
+                          return 'Please enter a valid number';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        cryptoAmount = double.parse(value!);
+                      },
+                    ),
+                    const SizedBox(height: 20.0),
 
-              // Button to generate results
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      generateForecast();
-                    }
-                  },
-                  child: const Text('Generate Forecast with AI'),
-                ),
-              ),
+                    // Button to generate results
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            generateForecast();
+                          }
+                        },
+                        child: const Text('Generate Forecast with AI'),
+                      ),
+                    ),
 
-              // Disclaimer text
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text(
-                  'All your data will be privately secured.',
-                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                    // Disclaimer text
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'All your data will be privately secured.',
+                        style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -120,8 +127,7 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
       if (!mounted) return;
 
       // Navigate to results page with the forecast data
-      Navigator.push(
-        context,
+      Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ForecastResultsPage(
             forecast: forecastData,
