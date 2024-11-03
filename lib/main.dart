@@ -1,10 +1,19 @@
 import 'package:crypto_tracker/notifiers/theme_notifier.dart';
 import 'package:crypto_tracker/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 
-void main() {
-  Gemini.init(apiKey: 'AIzaSyAXtMS9KyKDb4sFQwZAegWWRclet5dd1cE');
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
+  final geminiApiKey = dotenv.env['GEMINI_API_KEY'];
+  if (geminiApiKey == null) {
+    throw Exception('GEMINI_API_KEY not found in .env file');
+  }
+  Gemini.init(apiKey: geminiApiKey);
+
   runApp(
     CryptoTrackerApp(),
   );

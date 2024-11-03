@@ -39,6 +39,7 @@ dependencies:
   flutter_local_notifications: ^17.2.4
   flutter_icons_fix: ^1.0.3
   flutter_gemini: ^2.0.5
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
