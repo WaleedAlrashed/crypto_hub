@@ -1,9 +1,19 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
 
+part 'forecast_model.g.dart';
+
+@HiveType(typeId: 0)
 class ForecastModel {
+  @HiveField(0)
   final String crypto;
+
+  @HiveField(1)
   final Forecast forecast;
+
+  @HiveField(2)
   final String assumptions;
+
+  @HiveField(3)
   final String tips;
 
   ForecastModel({
@@ -22,7 +32,6 @@ class ForecastModel {
     );
   }
 
-  // Factory method for empty results
   factory ForecastModel.empty() {
     return ForecastModel(
       crypto: '',
@@ -33,9 +42,15 @@ class ForecastModel {
   }
 }
 
+@HiveType(typeId: 1)
 class Forecast {
+  @HiveField(0)
   final String shortTerm;
+
+  @HiveField(1)
   final String mediumTerm;
+
+  @HiveField(2)
   final String longTerm;
 
   Forecast({
@@ -51,7 +66,7 @@ class Forecast {
       longTerm: json['long_term'],
     );
   }
-  // Factory method for empty forecast
+
   factory Forecast.empty() {
     return Forecast(
       shortTerm: '',
@@ -59,28 +74,4 @@ class Forecast {
       longTerm: '',
     );
   }
-}
-
-// Example usage
-void main() {
-  String jsonString = '''
-  {
-    "crypto": "BTC",
-    "forecast": {
-      "short_term": "Up to 5-10%",
-      "medium_term": "15-25%",
-      "long_term": "50-100%"
-    },
-    "assumptions": "Assuming average market trends and historical growth rates",
-    "tips": "* Consider dollar-cost averaging to reduce risk and increase potential returns over time.\\n* Research and invest in a diverse portfolio of cryptocurrencies to reduce risk.\\n* Hold your investments long-term to maximize potential gains."
-  }
-  ''';
-
-  Map<String, dynamic> jsonData = jsonDecode(jsonString);
-  ForecastModel forecastModel = ForecastModel.fromJson(jsonData);
-
-  print('Crypto: ${forecastModel.crypto}');
-  print('Short Term Forecast: ${forecastModel.forecast.shortTerm}');
-  print('Assumptions: ${forecastModel.assumptions}');
-  print('Tips: ${forecastModel.tips}');
 }

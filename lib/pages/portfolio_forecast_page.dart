@@ -1,6 +1,8 @@
 import 'package:crypto_tracker/pages/forecast_results_page.dart';
 import 'package:crypto_tracker/services/gemini_service.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:crypto_tracker/models/forecast_model.dart';
 
 class PortfolioForecastPage extends StatefulWidget {
   const PortfolioForecastPage({super.key});
@@ -13,16 +15,17 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
   final _formKey = GlobalKey<FormState>();
   String? selectedCrypto;
   double? cryptoAmount;
-  bool _isLoading = false; // Track loading state
-  final List<String> cryptocurrencies = [
-    'BTC',
-    'ETH',
-    'BNB',
-    'XRP',
-    'ADA'
-  ]; // Example list
+  bool _isLoading = false;
+  final List<String> cryptocurrencies = ['BTC', 'ETH', 'BNB', 'XRP', 'ADA'];
   final TextEditingController amountController =
       TextEditingController(text: "50");
+  late Box<ForecastModel> forecastBox;
+
+  @override
+  void initState() {
+    super.initState();
+    forecastBox = Hive.box<ForecastModel>('forecasts');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,6 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Dropdown for selecting cryptocurrency
                     DropdownButtonFormField<String>(
                       value: selectedCrypto,
                       hint: const Text('Select Cryptocurrency'),
@@ -60,8 +62,6 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
                           : null,
                     ),
                     const SizedBox(height: 16.0),
-
-                    // Text field for entering amount
                     TextFormField(
                       controller: amountController,
                       keyboardType: TextInputType.number,
@@ -84,11 +84,9 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
                       },
                     ),
                     const SizedBox(height: 20.0),
-
-                    // Button to generate results
                     Center(
                       child: _isLoading
-                          ? const CircularProgressIndicator() // Show loading indicator
+                          ? const CircularProgressIndicator()
                           : ElevatedButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
@@ -99,13 +97,44 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
                               child: const Text('Generate Forecast with AI'),
                             ),
                     ),
-
-                    // Disclaimer text
                     const Padding(
                       padding: EdgeInsets.only(top: 8.0),
                       child: Text(
                         'All your data will be privately secured.',
                         style: TextStyle(fontSize: 12.0, color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    const SizedBox(
+                      height: 20,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("previous forecasts"),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: forecastBox.length,
+                        itemBuilder: (context, index) {
+                          final forecast = forecastBox.getAt(index);
+                          return Card(
+                            child: ListTile(
+                              title: Text(forecast!.crypto),
+                              subtitle: Text(
+                                  'Short Term: ${forecast.forecast.shortTerm}'),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ForecastResultsPage(forecast: forecast),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -118,20 +147,19 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
     );
   }
 
-  // Function to generate forecast by sending data to Google Gemini
   void generateForecast() async {
     setState(() {
-      _isLoading = true; // Set loading state to true
+      _isLoading = true;
     });
 
     try {
-      // Call Gemini API (this should be an async function)
       final forecastData =
           await GeminiService.getForecast(selectedCrypto!, cryptoAmount!);
 
       if (!mounted) return;
 
-      // Navigate to results page with the forecast data
+      forecastBox.add(forecastData);
+
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => ForecastResultsPage(
@@ -140,11 +168,10 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
         ),
       );
     } catch (e) {
-      // Handle any errors here
       print('Error fetching forecast: $e');
     } finally {
       setState(() {
-        _isLoading = false; // Reset loading state
+        _isLoading = false;
       });
     }
   }
