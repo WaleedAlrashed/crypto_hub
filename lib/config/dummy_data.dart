@@ -1,5 +1,5 @@
 class AppConfig {
-  static const bool isDebug = true;
+  static const bool isDebug = false;
 }
 
 const String dummyForecast = """

@@ -13,6 +13,7 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
   final _formKey = GlobalKey<FormState>();
   String? selectedCrypto;
   double? cryptoAmount;
+  bool _isLoading = false; // Track loading state
   final List<String> cryptocurrencies = [
     'BTC',
     'ETH',
@@ -86,15 +87,17 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
 
                     // Button to generate results
                     Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            generateForecast();
-                          }
-                        },
-                        child: const Text('Generate Forecast with AI'),
-                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator() // Show loading indicator
+                          : ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _formKey.currentState!.save();
+                                  generateForecast();
+                                }
+                              },
+                              child: const Text('Generate Forecast with AI'),
+                            ),
                     ),
 
                     // Disclaimer text
@@ -117,9 +120,11 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
 
   // Function to generate forecast by sending data to Google Gemini
   void generateForecast() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
+    setState(() {
+      _isLoading = true; // Set loading state to true
+    });
 
+    try {
       // Call Gemini API (this should be an async function)
       final forecastData =
           await GeminiService.getForecast(selectedCrypto!, cryptoAmount!);
@@ -134,6 +139,13 @@ class _PortfolioForecastPageState extends State<PortfolioForecastPage> {
           ),
         ),
       );
+    } catch (e) {
+      // Handle any errors here
+      print('Error fetching forecast: $e');
+    } finally {
+      setState(() {
+        _isLoading = false; // Reset loading state
+      });
     }
   }
 }
