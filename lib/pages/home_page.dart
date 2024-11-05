@@ -1,3 +1,4 @@
+import 'package:crypto_tracker/pages/chat_page.dart';
 import 'package:flutter/material.dart';
 import 'portfolio_forecast_page.dart';
 import 'price_list_page.dart';
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = <Widget>[
     const PortfolioForecastPage(),
     PriceListPage(),
+    const ChatPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -39,6 +41,10 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
             label: 'Prices',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.chat),
+            label: 'Crypto AI',
           ),
         ],
         currentIndex: _selectedIndex,
